@@ -120,8 +120,13 @@
     names.forEach((name, i) => {
       const info = styles.find(x => x.name === name); const button = document.createElement('button');
       const shot = state.photos[i % state.photos.length];
-      button.className = `style-option${state.style===name?' active':''}`; button.innerHTML = `<span class="style-cover"><img src="${shot.url}" alt="${styleTitles[name]} 스타일 미리보기"><i>미리보기</i><b>${name === 'Trailer' ? $('#carName').value.trim() : styleTitles[name]}</b></span><span class="style-name">${styleTitles[name]}</span><span class="style-desc">약 ${info.duration}초 · 사진 ${info.photos}장 · 장면 ${info.sceneCount}개</span><span class="style-detail">${info.desc}</span>`;
-      button.addEventListener('click', () => { state.style=name; drawStyleChoices(); updateSelectionSummary(); makeScenes(); }); $('#styleGrid').appendChild(button);
+      button.className = `style-option${state.style===name?' active':''}`; button.innerHTML = `<span class="style-cover"><img src="${shot.url}" alt="${styleTitles[name]} 스타일 미리보기"><span class="style-preview-trigger">미리보기</span><b>${name === 'Trailer' ? $('#carName').value.trim() : styleTitles[name]}</b></span><span class="style-name">${styleTitles[name]}</span><span class="style-desc">약 ${info.duration}초 · 사진 ${info.photos}장 · 장면 ${info.sceneCount}개</span><span class="style-detail">${info.desc}</span>`;
+      button.addEventListener('click', event => {
+        state.style=name; drawStyleChoices(); updateSelectionSummary(); makeScenes();
+        // The visible preview chip is an action: open the actual local video preview
+        // for this style. Clicking the rest of the card only selects the style.
+        if (event.target.closest('.style-preview-trigger')) setStep(3);
+      }); $('#styleGrid').appendChild(button);
     });
   }
   function drawBackgroundChoices() {
