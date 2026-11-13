@@ -35,7 +35,7 @@
       const name = [record.ModelYear, record.Make, record.Model, record.Trim].filter(Boolean).join(' ');
       if (!name) throw new Error('이 VIN의 차량명 정보를 제공하지 않습니다. 사진 업로드 후 직접 입력해 주세요.');
       $('#carName').value = name; $('#seller').value = '';
-      $$('.choice').forEach(x => x.classList.toggle('active', x.dataset.tab === 'photos')); $('#linkPanel').classList.add('hidden'); $('#photoPanel').classList.remove('hidden');
+      $$('.choice').forEach(x => x.classList.toggle('active', x.dataset.tab === 'photos')); $('#linkPanel').classList.add('hidden'); $('#photoPanel').classList.remove('hidden'); $('#uploadPanel').classList.add('photo-mode');
       $('#uploadStatus').textContent = `${name} 정보를 VIN에서 확인했어요. 사진을 올려 계속해 주세요.`;
     } catch (error) {
       showNotice('VIN 정보를 확인할 수 없습니다', `${error.message || '잠시 후 다시 시도해 주세요.'} · VIN은 미국 NHTSA vPIC 조회 서비스로 전송됩니다.`);
@@ -44,6 +44,8 @@
   $('#dialogClose').addEventListener('click', () => $('#noticeDialog').close());
   function setStep(step) {
     $$('.step').forEach(el => el.classList.toggle('active', Number(el.dataset.step) <= step));
+    $('.steps').classList.toggle('hidden', step === 1);
+    $('.builder').classList.toggle('first-step', step === 1);
     $('#stepLabel').textContent = `${step} / 4 · ${['', '목록', '나만의 것으로 만들어보세요', '결제', '동영상'][step]}`;
     $('#stepTitle').textContent = ['','차량을 추가하세요','나만의 것으로 만들어보세요','영상 미리보기','동영상 준비'][step];
     $('.builder-heading').classList.toggle('editor-heading', step === 2);
@@ -84,18 +86,18 @@
   }
   $$('.choice').forEach(button => button.addEventListener('click', () => {
     $$('.choice').forEach(x => x.classList.toggle('active', x === button));
-    const link = button.dataset.tab === 'link'; $('#linkPanel').classList.toggle('hidden', !link); $('#photoPanel').classList.toggle('hidden', link);
+    const link = button.dataset.tab === 'link'; $('#linkPanel').classList.toggle('hidden', !link); $('#photoPanel').classList.toggle('hidden', link); $('#uploadPanel').classList.toggle('photo-mode',!link);
   }));
   $('#parseLink').addEventListener('click', () => {
     const url = $('#listingUrl').value.trim();
     if (!url) return showNotice('매물 링크 입력', '매물 주소 또는 17자리 VIN을 입력해 주세요.');
     if (/^[A-HJ-NPR-Z0-9]{17}$/i.test(url)) {
       $('#parseLink').disabled = true; $('#parseLink').textContent = '확인 중…';
-      decodeVin(url).finally(() => { $('#parseLink').disabled = false; $('#parseLink').textContent = '계속하다 →'; });
+      decodeVin(url).finally(() => { $('#parseLink').disabled = false; $('#parseLink').textContent = '계속하기 →'; });
       return;
     }
     showNotice('사진을 업로드해 주세요', '매물 링크의 사진과 세부 정보는 원본 서비스 서버가 가져옵니다. 이 독립 버전에는 매물 사이트 연동 서버가 연결되어 있지 않으므로, 사진 업로드와 차량 정보를 직접 입력해 계속할 수 있습니다.');
-    $$('.choice').forEach(x => x.classList.toggle('active', x.dataset.tab === 'photos')); $('#linkPanel').classList.add('hidden'); $('#photoPanel').classList.remove('hidden');
+    $$('.choice').forEach(x => x.classList.toggle('active', x.dataset.tab === 'photos')); $('#linkPanel').classList.add('hidden'); $('#photoPanel').classList.remove('hidden'); $('#uploadPanel').classList.add('photo-mode');
   });
   $('#toEditor').addEventListener('click', async () => {
     if (state.photos.length < 3) return showNotice('사진을 3장 이상 선택해 주세요', '차량의 전면, 측면, 후면이나 실내 사진을 최소 3장 올리면 영상 장면을 구성할 수 있습니다.');
@@ -228,8 +230,10 @@
   $('#downloadVideo').addEventListener('click',renderSafely);$('#downloadAgain').addEventListener('click',renderSafely);
   $('#linePerScene').addEventListener('change',()=>updatePreview());$('#fontSelect').addEventListener('change',()=>updatePreview());
   $('#menuButton').addEventListener('click',()=>showNotice('VanillaSky','차량을 등록하고 영상 설정을 완료하면 미리보기와 다운로드가 가능합니다.'));
+  $('#loginLink').addEventListener('click',event=>{event.preventDefault();showNotice('로그인 기능 안내','이 독립 구현에는 계정과 로그인이 연결되어 있지 않습니다. 업로드한 사진은 현재 브라우저 안에서만 처리됩니다.');});
   drawMusicChoices(); drawSpeakers();
   if ('speechSynthesis' in window) speechSynthesis.addEventListener('voiceschanged',drawSpeakers);
   updateSelectionSummary();
+  setStep(1);
 })();
 
