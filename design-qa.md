@@ -1,29 +1,27 @@
-# VanillaSky2 Design / Functional QA
+# VanillaSky2 UI / 기능 확인 기록
 
-## Reference observed
+## 원본 확인
 
-- Source: `https://app.vanillasky.ai/start` and the authorized test draft editor at `/create?id=…`.
-- Captured desktop and 390×844 mobile source viewports.
-- Observed flow: vehicle photos/details → video format and shape → style, background, music, voice, brand → storyboard review → payment and AI video generation.
-- Only the editor before payment was inspected. The source paid generation action was not activated.
+- 사용자가 제공한 접근 권한으로 `https://app.vanillasky.ai/start` 및 로그인된 `/create?id=…` 화면을 브라우저에서 확인했습니다.
+- 원본에서 관찰한 화면: 시작 탭(매물 링크/VIN, 사진 업로드), 4단계 진행 표시, 차량 요약과 사진 썸네일, 사용 목적, 16:9/9:16, 영상 스타일 카드, 배경/음악/음성/브랜드 설정, 장면 검토와 주문 요약.
+- 확인한 원본은 데스크톱 화면입니다. 모바일 원본 캡처는 이번 점검에서 확보하지 않았습니다.
+- 유료 생성 또는 Stripe 결제는 누르지 않았습니다.
 
-## Implementation
+## 현재 구현
 
-- Independent Korean responsive upload, settings, storyboard and preview UI informed by the inspected flow.
-- Local photo upload (3–20), car details, format/ratio/style/overlay color/music options, local logo, scene editing/reordering and canvas preview.
-- Client-side WebM export from the canvas and browser Korean voice preview.
-- No source account backend, paid AI generation, external listing import, payment, cloud storage or server-based AI voice. Background presets tint the original photo; they do not replace its background. Audio is synthesized ambience, not licensed or AI music. These distinctions are shown in the UI and README.
-- Test photos remain outside the public source repository.
+- 원본 화면 구조를 기준으로 한국어 시작 화면, 설정 카드, 장면 카드와 주문 요약을 재배치했습니다.
+- 사진 업로드, 썸네일/장면별 사진 교체, 순서 변경, 차종 정보, 9:16/16:9, 템플릿, 장면 문구 수정, 브라우저 음성 미리듣기, 로고 파일과 글꼴 선택을 구현합니다.
+- 사진 색감 프리셋은 얇은 색상 오버레이입니다. 배경 제거/생성은 하지 않습니다.
+- 영상 파일은 브라우저 캔버스에서 무음 WebM으로 만듭니다. AI 모션, 배경 합성, 실제 음악 트랙, TTS 오디오 삽입, 결제, 로그인, 매물 사이트 사진 크롤링 서버는 연결되어 있지 않습니다.
+- VIN의 NHTSA 응답에서 오류 코드 `0`을 실패로 판단하던 분기를 수정했습니다.
 
-## Verification
+## 이 개정본에서 확인한 것
 
-- Deployed GitHub Pages flow: uploaded the provided three BMW photos, entered vehicle details, selected social format, 9:16 and the three-scene template, then confirmed the real-photo vertical preview.
-- Rendered and downloaded the resulting WebM file in the browser. The UI reached `4 / 4 · 다운로드`, displayed `영상 파일이 준비됐어요` and `영상 다운로드가 시작됐어요 · 완료`; the browser download event returned a local file path.
-- The embedded browser initially kept waiting at 100% for the recorder stop event. The renderer now waits a bounded four seconds after stop, and the script URL is versioned to bypass a stale cached renderer.
-- No browser console errors were observed during the successful run.
-- Source AI generation/payment parity was not tested or claimed.
+- `node --check app.js` 구문 검사.
+- 배포 전 로컬 브라우저에서 폼부터 WebM 다운로드까지 다시 실행하지 못했습니다. 해당 검증을 완료했다고 표시하지 않습니다.
+- 원본 데스크톱 화면과 구현 화면을 동일 상태/뷰포트로 대조하는 시각 QA도 아직 완료되지 않았습니다. 이전 버전의 캡처/시험 결과를 이 수정본의 통과 증거로 취급하지 않습니다.
 
-## Current outcome
+## QA 결과
 
-Previous VanillaSky flow was verified end to end with test BMW photos. VanillaSky2 is a separate Pages deployment of the same checked implementation. This is a client-side slideshow renderer, not the source service's paid generative video backend.
+**차단됨** — 코드에는 원본 단계와 항목이 반영되었지만, 이 수정본의 종단 간 브라우저 기능 검증 및 동일 조건 시각 비교가 완료되지 않았습니다. 모바일 원본 캡처도 없습니다. 배포 주소에서 이후 확인이 필요합니다.
 
