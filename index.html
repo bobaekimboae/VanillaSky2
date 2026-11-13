@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./styles.css?v=20261113-v3" />
-    <link rel="stylesheet" href="./source-overrides.css?v=20261113-v3" />
+    <link rel="stylesheet" href="./source-overrides.css?v=20261113-v4" />
   </head>
   <body>
     <header class="topbar">
@@ -70,7 +70,7 @@
           <aside class="editor-summary"><div class="summary-meta"><span id="summaryMeta"></span><button class="text-button" id="editCar">편집하다</button></div><div class="summary-photos" id="summaryPhoto"></div><b id="summaryName">차량명</b></aside>
           <div class="settings">
             <div class="setting-section"><div class="section-title"><div><h3>원하는 영상을 선택하세요</h3></div></div><div class="option-columns"><div><span class="option-label">사용</span><div class="segmented"><button class="seg" data-format="listing">차량 목록</button><button class="seg active" data-format="social">소셜 미디어 게시물</button></div><p class="option-help" id="formatHelp">차량의 모습, 가격 및 주요 세부 정보를 보여줍니다.</p></div><div><span class="option-label">모양</span><div class="segmented"><button class="seg" data-ratio="16:9">▭ 풍경</button><button class="seg active" data-ratio="9:16">▯ 초상화</button></div><p class="option-help" id="ratioHelp">9:16 · 인스타그램 릴스 & 스토리, 틱톡, 유튜브 쇼츠.</p></div></div></div>
-            <div class="setting-section"><div class="section-title"><div><h3>영상 스타일</h3><p>업로드한 사진과 장면별 문구로 미리보기를 구성합니다. 이 독립 버전은 정지 사진을 사용합니다.</p></div><button class="carousel-arrow" type="button" aria-label="다음 스타일">›</button></div><div class="style-grid" id="styleGrid"></div></div>
+            <div class="setting-section"><div class="section-title"><div><h3>영상 스타일</h3><p>사진을 누르면 해당 스타일의 영상 미리보기가 열립니다.</p></div><button class="carousel-arrow" type="button" aria-label="다음 스타일">›</button></div><div class="style-grid" id="styleGrid"></div></div>
             <div class="setting-section"><div class="section-title"><div><h3>배경 분위기를 선택하세요</h3><p>선택한 색감 오버레이가 사진에 적용됩니다. 이 버전은 실제 배경을 합성하지 않습니다.</p></div><button class="carousel-arrow" type="button" aria-label="다음 배경">›</button></div><div class="background-grid" id="backgroundGrid"></div></div>
             <div class="setting-section"><div class="section-title"><div><h3>원하는 음악을 선택하세요</h3><p>음악 선택은 원본 서비스의 유료 렌더링용 설정입니다. 로컬 WebM에는 음악이 포함되지 않습니다.</p></div></div><div class="music-grid" id="musicGrid"></div></div>
             <div class="setting-section"><div class="section-title"><div><h3>내레이션</h3><p id="voiceSummary">꺼짐 · 나레이션 없음</p></div><label class="switch"><input id="voiceToggle" type="checkbox" /><span></span></label></div><div class="voice-options hidden" id="voiceScript"><label>언어<select id="voiceLanguage"><option value="ko-KR">한국어</option><option value="en-US">영어</option><option value="de-DE">독일어</option><option value="nl-NL">네덜란드어</option></select></label><div class="speaker-grid" id="speakerGrid"></div><label class="check-row"><input id="linePerScene" type="checkbox" checked /><span><b>장면별 문구 읽기</b></span></label><label class="voice-script-text">내레이션 대본<textarea id="scriptText" rows="3"></textarea></label><button id="speakScript" class="secondary small">▶ 브라우저 음성으로 미리 듣기</button><p class="option-help">미리듣기만 지원합니다. 음성은 다운로드 파일에 포함되지 않습니다.</p></div></div>
