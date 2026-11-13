@@ -13,17 +13,17 @@
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="#" aria-label="VanillaSky 홈"><span class="brand-mark">✳</span><span>vanilla<span class="sky">sky</span></span></a>
-      <nav><a href="#how">이용 방법</a><a href="#price">요금</a><button class="menu-button" id="menuButton" aria-label="메뉴">☰</button></nav>
+      <a class="brand" href="#" aria-label="VanillaSky 홈"><span class="brand-script">Vanilla</span><span class="brand-sky">Sky</span></a>
+      <nav><a href="#how">작동 방식</a><a href="#examples">예시</a><a href="#price">가격</a><a href="#faq">자주 묻는 질문</a><a href="#login">로그인</a><a class="nav-cta" href="#builder">내 영상 만들기</a><button class="menu-button" id="menuButton" aria-label="메뉴">☰</button></nav>
     </header>
 
     <main>
       <section class="intro" id="start">
         <div class="intro-copy">
-          <span class="eyebrow"><i></i> 차량 사진에서 영상까지</span>
-          <h1>차량 사진을<br />영상으로 바꿔보세요</h1>
-          <p>매물 사진을 올리고 정보를 확인하면, 매물 소개 영상과 세로형 숏폼을 직접 만들 수 있어요.</p>
-          <div class="trust-row"><span>사진 순서 편집</span><span>세로형 9:16</span><span>파일은 내 기기에서 처리</span></div>
+          <span class="eyebrow"><i></i> VanillaSky</span>
+          <h1>차량을 추가하세요</h1>
+          <p>매물 링크를 붙여넣거나 사진을 업로드하세요. 계속 진행하기 전에 차량 정보를 확인할 수 있습니다.</p>
+          <div class="trust-row"><span>사진 업로드</span><span>세로형 9:16</span><span>차량 정보 검토</span></div>
         </div>
         <div class="hero-preview" aria-label="영상 미리보기 예시">
           <div class="hero-car"><div class="sun"></div><div class="road"></div><div class="silhouette"><span class="wheel w1"></span><span class="wheel w2"></span></div></div>
@@ -35,19 +35,19 @@
 
       <section class="builder" id="builder">
         <div class="builder-heading">
-          <div><div class="step-label" id="stepLabel">1 / 4 · 차량 정보</div><h2 id="stepTitle">먼저 차량을 등록해 주세요</h2></div>
-          <span class="price-tag">영상 1편부터 무료로 미리보기</span>
+          <div><div class="step-label" id="stepLabel">1 / 4 · 목록</div><h2 id="stepTitle">차량을 추가하세요</h2></div>
+          <span class="price-tag">영상당 5달러 · 구독료 없음</span>
         </div>
-        <div class="steps"><span class="step active" data-step="1">차량 등록</span><i></i><span class="step" data-step="2">영상 설정</span><i></i><span class="step" data-step="3">미리보기</span><i></i><span class="step" data-step="4">다운로드</span></div>
+        <div class="steps"><span class="step active" data-step="1">목록</span><i></i><span class="step" data-step="2">나만의 것으로 만들어보세요</span><i></i><span class="step" data-step="3">결제</span><i></i><span class="step" data-step="4">동영상</span></div>
 
         <section class="panel upload-panel" id="uploadPanel">
           <div class="form-side">
-            <div class="choice-tabs"><button class="choice active" data-tab="photos">사진 올리기</button><button class="choice" data-tab="link">매물 링크</button></div>
-            <div class="link-panel hidden" id="linkPanel">
-              <label for="listingUrl">매물 링크 또는 VIN</label><div class="url-field"><input id="listingUrl" placeholder="https://매물주소 또는 VIN" /><button id="parseLink">확인</button></div>
-              <p class="hint">링크 가져오기는 매물 사이트의 접근 허용 여부에 따라 달라질 수 있어요. 사진과 정보가 자동으로 채워지지 않으면 직접 입력해 주세요.</p>
+            <div class="choice-tabs"><button class="choice active" data-tab="link">링크 또는 차량 식별 번호(VIN)를 붙여넣으세요</button><button class="choice" data-tab="photos">사진 업로드</button></div>
+            <div class="link-panel" id="linkPanel">
+              <label for="listingUrl">차량 목록 링크 또는 VIN</label><div class="url-field"><input id="listingUrl" placeholder="매물 링크 또는 17자리 VIN" /><button id="parseLink">계속하다 →</button></div>
+              <p class="hint">딜러 매물 링크는 사이트에 따라 사진 자동 가져오기가 지원되지 않을 수 있습니다. VIN은 미국 NHTSA vPIC 조회 서비스에 전송되어 기본 차량 정보를 확인합니다. Facebook Marketplace 등은 사진을 직접 업로드해 주세요.</p>
             </div>
-            <div class="photo-panel" id="photoPanel">
+            <div class="photo-panel hidden" id="photoPanel">
               <label class="dropzone" id="dropzone" for="photoInput">
                 <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" multiple />
                 <span class="upload-icon">↑</span><strong>차량 사진을 여기에 놓거나 눌러서 선택</strong><small>JPG, PNG, WebP · 최소 3장, 최대 20장 · 장당 20MB</small>
@@ -60,36 +60,37 @@
               <label>판매 가격<input id="price" inputmode="numeric" placeholder="예: 4,500만 원" /></label>
               <label>판매자 또는 매장명<input id="seller" placeholder="예: 바닐라 모터스" /></label>
             </div>
-            <div class="form-actions"><span id="uploadStatus" class="hint">사진은 이 브라우저 안에서만 처리됩니다.</span><button class="primary" id="toEditor">차량 정보 확인 <span>→</span></button></div>
+            <div class="form-actions"><span id="uploadStatus" class="hint">먼저 링크를 붙여넣거나 사진 업로드를 선택하세요.</span><button class="primary" id="toEditor">계속하다 <span>→</span></button></div>
           </div>
           <aside class="form-aside"><div class="aside-icon">✳</div><h3>사진과 정보를<br />한 번 더 확인해 주세요</h3><p>업로드한 사진은 영상 장면으로 연결됩니다. 사진을 끌어 순서를 바꿀 수 있어요.</p><div class="aside-note"><b>매물 사진 팁</b><span>전면, 측면, 후면, 실내 사진을 골고루 올리면 더 보기 좋은 영상이 됩니다.</span></div></aside>
         </section>
 
         <section class="panel editor-panel hidden" id="editorPanel">
-          <aside class="editor-summary"><div class="summary-photo" id="summaryPhoto"></div><b id="summaryName">차량명</b><span id="summaryMeta"></span><button class="text-button" id="editCar">차량 정보 수정</button><div class="summary-divider"></div><div class="selected-summary"><span>영상 비율</span><b id="sumRatio">세로형 · 9:16</b></div><div class="selected-summary"><span>선택한 스타일</span><b id="sumStyle">Walkaround</b></div><div class="selected-summary"><span>배경</span><b id="sumBackground">내 사진</b></div></aside>
+          <aside class="editor-summary"><div class="summary-meta"><span id="summaryMeta"></span><button class="text-button" id="editCar">편집하다</button></div><div class="summary-photos" id="summaryPhoto"></div><b id="summaryName">차량명</b></aside>
           <div class="settings">
-            <div class="setting-section"><div class="section-title"><div><h3>영상 형식</h3><p>매물 소개 또는 소셜 게시물에 맞게 선택하세요.</p></div></div><div class="segmented"><button class="seg active" data-format="listing">차량 매물</button><button class="seg" data-format="social">소셜 숏폼</button></div><div class="segmented compact"><button class="seg active" data-ratio="9:16">세로형 <small>9:16 · 쇼츠 / 릴스</small></button><button class="seg" data-ratio="16:9">가로형 <small>16:9 · 웹 / 매물</small></button></div></div>
-            <div class="setting-section"><div class="section-title"><div><h3>영상 스타일</h3><p>사진과 문구를 조합한 편집 템플릿을 선택하세요.</p></div></div><div class="style-grid" id="styleGrid"></div></div>
-            <div class="setting-section"><div class="section-title"><div><h3>배경 색감</h3><p>선택한 분위기는 사진 위 색감으로 적용됩니다. AI 배경 교체는 지원하지 않습니다.</p></div></div><div class="background-grid" id="backgroundGrid"></div></div>
-            <div class="setting-section"><div class="section-title"><div><h3>음악과 음성</h3><p>영상에 어울리는 사운드를 골라보세요.</p></div></div><div class="select-row"><label>배경 음악<select id="musicSelect"><option>Lift off · 경쾌한 시네마틱</option><option>Glide slow · 여유로운 드라이브</option><option>Evening · 잔잔한 분위기</option><option>Grand tour · 웅장한 여정</option><option>Highway · 에너지 넘치는 주행</option></select></label><button class="sound-button" id="musicPreview">▶ 미리 듣기</button></div><label class="check-row"><input id="voiceToggle" type="checkbox" /><span><b>한국어 음성 안내 미리 듣기</b><small>기기의 한국어 음성 기능을 사용합니다.</small></span></label><label class="check-row"><input id="linePerScene" type="checkbox" checked /><span><b>장면마다 한 줄 설명 표시</b><small>차량 정보와 선택한 스타일에 따라 장면 문구를 구성합니다.</small></span></label><div class="voice-script hidden" id="voiceScript"><label>한국어 음성 대본<textarea id="scriptText" rows="3"></textarea></label><button id="speakScript" class="secondary small">▶ 음성 미리 듣기</button></div></div>
-            <div class="setting-section"><div class="section-title"><div><h3>브랜드</h3><p>로고와 서체로 매장만의 마무리를 더하세요.</p></div></div><div class="brand-row"><label class="logo-upload" for="logoInput">＋ 매장 로고 등록<input id="logoInput" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" /></label><span id="logoName">등록된 로고 없음</span></div><label class="font-select">자막 글꼴<select id="fontSelect"><option value="Manrope">Manrope</option><option value="DM Sans">DM Sans</option><option value="serif">클래식 세리프</option></select></label></div>
-            <div class="setting-section"><div class="section-title"><div><h3>장면 순서와 문구</h3><p>장면 카드를 끌어 순서를 바꾸거나 텍스트를 수정하세요.</p></div><span class="duration" id="sceneDuration"></span></div><div class="scene-list" id="sceneList"></div></div>
-            <div class="editor-actions"><button class="secondary" id="backToUpload">← 차량 정보</button><button class="primary" id="makePreview">미리보기 만들기 <span>→</span></button></div>
+            <div class="setting-section"><div class="section-title"><div><h3>원하는 영상을 선택하세요</h3></div></div><div class="option-columns"><div><span class="option-label">사용</span><div class="segmented"><button class="seg" data-format="listing">차량 목록</button><button class="seg active" data-format="social">소셜 미디어 게시물</button></div><p class="option-help" id="formatHelp">차량의 모습, 가격 및 주요 세부 정보를 보여줍니다.</p></div><div><span class="option-label">모양</span><div class="segmented"><button class="seg" data-ratio="16:9">▭ 풍경</button><button class="seg active" data-ratio="9:16">▯ 초상화</button></div><p class="option-help" id="ratioHelp">9:16 · 인스타그램 릴스 & 스토리, 틱톡, 유튜브 쇼츠.</p></div></div></div>
+            <div class="setting-section"><div class="section-title"><div><h3>영상 스타일</h3><p>업로드한 사진과 장면별 문구로 미리보기를 구성합니다. 이 독립 버전은 정지 사진을 사용합니다.</p></div><button class="carousel-arrow" type="button" aria-label="다음 스타일">›</button></div><div class="style-grid" id="styleGrid"></div></div>
+            <div class="setting-section"><div class="section-title"><div><h3>배경 분위기를 선택하세요</h3><p>선택한 색감 오버레이가 사진에 적용됩니다. 이 버전은 실제 배경을 합성하지 않습니다.</p></div><button class="carousel-arrow" type="button" aria-label="다음 배경">›</button></div><div class="background-grid" id="backgroundGrid"></div></div>
+            <div class="setting-section"><div class="section-title"><div><h3>원하는 음악을 선택하세요</h3><p>음악 선택은 원본 서비스의 유료 렌더링용 설정입니다. 로컬 WebM에는 음악이 포함되지 않습니다.</p></div></div><div class="music-grid" id="musicGrid"></div></div>
+            <div class="setting-section"><div class="section-title"><div><h3>내레이션</h3><p id="voiceSummary">꺼짐 · 나레이션 없음</p></div><label class="switch"><input id="voiceToggle" type="checkbox" /><span></span></label></div><div class="voice-options hidden" id="voiceScript"><label>언어<select id="voiceLanguage"><option value="ko-KR">한국어</option><option value="en-US">영어</option><option value="de-DE">독일어</option><option value="nl-NL">네덜란드어</option></select></label><div class="speaker-grid" id="speakerGrid"></div><label class="check-row"><input id="linePerScene" type="checkbox" checked /><span><b>장면별 문구 읽기</b></span></label><label class="voice-script-text">내레이션 대본<textarea id="scriptText" rows="3"></textarea></label><button id="speakScript" class="secondary small">▶ 브라우저 음성으로 미리 듣기</button><p class="option-help">미리듣기만 지원합니다. 음성은 다운로드 파일에 포함되지 않습니다.</p></div></div>
+            <div class="setting-section"><div class="section-title"><div><h3>브랜드</h3><p id="logoName">로고 없음 · 로고와 글꼴을 추가할 수 있습니다</p></div></div><div class="brand-options"><div><span class="option-label">화면 아래쪽에 로고를 표시합니다.</span><div class="brand-row"><span class="logo-empty">로고 없음</span><label class="logo-upload" for="logoInput">로고 업로드<input id="logoInput" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" /></label></div></div><div><span class="option-label">장면 글꼴</span><div class="font-pills"><button class="active" data-font="Inter">인터</button><button data-font="serif">세리프</button><button data-font="Nunito">누니토</button><button data-font="Barlow Condensed">바로우</button><button data-font="DM Sans">DM 산스</button></div><select id="fontSelect" class="visually-hidden"><option value="Inter">Inter</option><option value="serif">Serif</option><option value="Nunito">Nunito</option><option value="Barlow Condensed">Barlow Condensed</option><option value="DM Sans">DM Sans</option></select></div></div></div>
+            <div class="setting-section"><div class="section-title"><div><h3>장면 구성</h3><p>사진 순서와 문구를 확인하고 직접 편집할 수 있습니다. 유료 AI 영상 렌더링은 연결되어 있지 않습니다.</p></div><span class="duration" id="sceneDuration"></span></div><div class="scene-list" id="sceneList"></div><div class="order-summary"><div class="order-details"><h3>영상 설정</h3><div class="order-row"><span>사용 목적</span><b id="sumFormat">소셜 미디어 게시물용</b></div><div class="order-row"><span>화면 속 가격</span><b id="sumPrice">이 스타일에서 사용되는 곳에 포함됩니다.</b></div><div class="order-row"><span>화면 비율</span><b id="sumRatio">세로형 · 9:16</b></div><div class="order-row"><span>영상 스타일</span><b id="sumStyle">Trailer</b></div><div class="order-row"><span>배경 선택</span><b id="sumBackground">당신의 사진</b></div><div class="order-row"><span>음악 / 내레이션</span><b id="sumMusic">Taiko · 꺼짐</b></div><div class="order-row"><span>브랜드 표시</span><b id="sumBrand">로고 없음 · 인터</b></div></div><div class="order-checkout"><span>원본 서비스 가격 참고</span><strong>US$5</strong><small>원본 VanillaSky의 1회성 가격입니다. 이 페이지는 결제를 받지 않습니다.</small><button class="primary full" id="checkoutButton">원본 결제 계속하기 <span>→</span></button><button class="secondary full local-preview" id="makePreview">무료 미리보기 만들기 <span>→</span></button><p>실제 결제와 생성형 AI 영상 제작은 연결되지 않았습니다. 미리보기는 기기에서 제작됩니다.</p></div></div>
+            <div class="editor-actions"><button class="secondary" id="backToUpload">← 차량 목록</button></div>
           </div>
         </section>
 
         <section class="panel preview-panel hidden" id="previewPanel">
           <div class="preview-workspace"><div class="render-card"><div class="render-stage" id="renderStage"><canvas id="previewCanvas" width="720" height="1280"></canvas><button class="canvas-play" id="playPreview" aria-label="미리보기 재생">▶</button></div><div class="timeline-bar"><button id="prevScene">‹</button><div id="timeline"></div><button id="nextScene">›</button></div></div><div class="preview-controls"><span class="ready-dot"></span><b>영상 미리보기가 준비됐어요</b><span>사진과 문구를 확인한 뒤 영상 파일을 만들 수 있습니다.</span><button class="secondary" id="changeSettings">설정 수정</button></div></div>
-          <aside class="export-card"><div class="step-label">3 / 4 · 미리보기</div><h3>최종 영상을<br />확인해 주세요</h3><p>사진을 연결한 장면 영상입니다. 다운로드하면 기기에서 WebM 파일을 만듭니다.</p><div class="export-spec"><span>화면 비율</span><b id="exportRatio">세로형 9:16 · 720 × 1280</b></div><div class="export-spec"><span>예상 길이</span><b id="exportLength">약 12초</b></div><div class="export-spec"><span>출력 파일</span><b>WebM 동영상</b></div><div class="export-notice">영상 렌더링은 현재 브라우저에서 진행됩니다. 탭을 닫지 말아 주세요.</div><button class="primary full" id="downloadVideo">영상 파일 만들기 <span>↓</span></button><div class="progress-wrap hidden" id="renderProgress"><div><span id="progressLabel">영상 만드는 중</span><b id="progressValue">0%</b></div><div class="progress-track"><i id="progressBar"></i></div></div><button class="text-button full" id="downloadAgain" hidden>영상 다시 다운로드</button></aside>
+          <aside class="export-card"><div class="step-label">3 / 4 · 미리보기</div><h3>미리보기를<br />확인해 주세요</h3><p>사진과 문구를 연결한 장면 영상입니다. 다운로드하면 기기에서 WebM 파일을 만듭니다.</p><div class="export-spec"><span>화면 비율</span><b id="exportRatio">세로형 9:16 · 720 × 1280</b></div><div class="export-spec"><span>예상 길이</span><b id="exportLength">약 12초</b></div><div class="export-spec"><span>출력 파일</span><b>WebM 동영상 · 무음</b></div><div class="export-notice">영상은 이 브라우저에서 생성됩니다. 이 버전의 WebM에는 음악과 AI 모션이 포함되지 않습니다.</div><button class="primary full" id="downloadVideo">영상 파일 저장 <span>↓</span></button><div class="progress-wrap hidden" id="renderProgress"><div><span id="progressLabel">영상 만드는 중</span><b id="progressValue">0%</b></div><div class="progress-track"><i id="progressBar"></i></div></div><button class="text-button full" id="downloadAgain" hidden>영상 다시 저장</button></aside>
         </section>
       </section>
 
-      <section class="how" id="how"><div><span class="eyebrow">간단한 제작 흐름</span><h2>사진에서 영상까지,<br />세 단계면 충분해요</h2></div><div class="how-steps"><article><span>01</span><b>차량 사진과 정보</b><p>차량을 잘 보여주는 사진을 선택하고 정보를 확인합니다.</p></article><article><span>02</span><b>형식과 스타일 선택</b><p>세로형 숏폼, 매물 영상, 배경 음악과 자막을 설정합니다.</p></article><article><span>03</span><b>미리보기와 다운로드</b><p>완성된 영상을 미리 보고 기기에 저장합니다.</p></article></div></section>
-      <section class="price-section" id="price"><div><span class="eyebrow">요금 안내</span><h2>먼저 만들어보고<br />마음에 들면 저장하세요</h2></div><div class="price-card"><b>미리보기 및 로컬 제작</b><strong>무료</strong><p>브라우저에서 미리보기를 만들고 WebM 동영상으로 다운로드할 수 있습니다. 외부 AI 영상 생성 또는 결제는 연결되어 있지 않습니다.</p><a href="#builder">차량 등록하기 →</a></div></section>
+      <section class="how hidden" id="how"></section><section class="price-section hidden" id="price"></section><section class="hidden" id="examples"></section><section class="hidden" id="faq"></section>
     </main>
-    <footer><a class="brand" href="#"><span class="brand-mark">✳</span><span>vanilla<span class="sky">sky</span></span></a><span>업로드한 사진은 현재 브라우저에서 처리됩니다.</span><a href="#how">이용 방법</a><small>© 2026 VanillaSky · 독립 구현 한국어 버전</small></footer>
+    <footer><div class="footer-about"><a class="brand" href="#"><span class="brand-script">Vanilla</span><span class="brand-sky">Sky</span></a><p>등록한 차량의 사진과 확정된 세부 정보를 사용하여 차량 소개 페이지와 피드에 바로 사용할 수 있는 차량 영상을 제작합니다. 직접 촬영할 필요가 없습니다.</p><div class="social-links"><a href="#instagram" aria-label="Instagram">◎</a><a href="#tiktok" aria-label="TikTok">♪</a><a href="#linkedin" aria-label="LinkedIn">in</a></div><button class="locale-button">🇺🇸 미국 · 영어⌄</button></div><div><b>제품</b><a href="#examples">예시</a><a href="#how">작동 방식</a><a href="#price">가격</a><a href="#listing-sites">매물 사이트</a></div><div><b>배우기</b><a href="#guides">가이드</a><a href="#compare">비교</a><a href="#glossary">용어</a><a href="#faq">자주 묻는 질문</a></div><div><b>회사</b><a href="#about">회사 소개</a><a href="mailto:hello@vanillasky.ai">hello@vanillasky.ai</a><a href="#privacy">개인정보</a><a href="#terms">약관</a><a href="#support">도움말 및 환불</a></div><small>© 2026 VanillaSky · 한국어 독립 구현</small></footer>
     <dialog id="noticeDialog"><div class="dialog-icon">✳</div><h3 id="dialogTitle">안내</h3><p id="dialogBody"></p><button class="primary" id="dialogClose">확인</button></dialog>
     <script src="./app.js?v=20261113-v2"></script>
   </body>
 </html>
+
 
