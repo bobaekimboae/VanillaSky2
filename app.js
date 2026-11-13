@@ -1,7 +1,7 @@
 (() => {
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-  const state = { photos: [], scenes: [], format: 'social', ratio: '9:16', style: 'Trailer', background: '당신의 사진', music: 'Taiko', voice: false, speaker: '한국어 기본 음성', font: 'Inter', logo: null, rendered: null, reorderFrom: -1 };
+  const state = { photos: [], scenes: [], format: 'social', ratio: '9:16', style: 'Trailer', background: '당신의 사진', music: 'Taiko', voice: false, speaker: '한국어 기본 음성', voiceoverFile: null, font: 'Inter', logo: null, rendered: null, reorderFrom: -1 };
   const styles = [
     { name: 'Walkaround', desc: '외관, 주요 특징 및 실내를 보여주세요.', duration: 43, photos: 8, sceneCount: 9, labels: ['시작','사진 1','반대편','세부 정보','대시보드','실내 1','실내 2','실내 3','엔딩 카드'] },
     { name: 'Spec Sheet', desc: '차량의 주요 정보를 화면에 하나씩 표시하세요.', duration: 26, photos: 4, sceneCount: 5, labels: ['시작','차량 정보','세부 정보','사양','엔딩 카드'] },
@@ -138,9 +138,9 @@
     $('#sumStyle').textContent = styleTitles[state.style] || state.style; $('#sumBackground').textContent = state.background;
     $('#sumFormat').textContent = state.format === 'social' ? '소셜 미디어 게시물용' : '차량 매물 정보';
     $('#sumPrice').textContent = state.format === 'social' ? '이 스타일에서 사용되는 곳에 포함됩니다.' : '가격은 영상에 포함되지 않습니다.';
-    $('#sumMusic').textContent = `${tracks.find(track=>track.name===state.music)?.title||state.music} · ${state.voice ? state.speaker : '나레이션 꺼짐'}`;
+    $('#sumMusic').textContent = `${tracks.find(track=>track.name===state.music)?.title||state.music} · ${state.voice ? (state.voiceoverFile ? state.voiceoverFile.name : '음성 파일 없음') : '나레이션 꺼짐'}`;
     $('#sumBrand').textContent = `${state.logo ? $('#logoName').textContent : '로고 없음'} · ${state.font}`;
-    $('#voiceSummary').textContent = state.voice ? `${$('#voiceLanguage').selectedOptions[0].textContent} · ${state.speaker}` : '꺼짐 · 나레이션 없음';
+    $('#voiceSummary').textContent = state.voice ? `${$('#voiceLanguage').selectedOptions[0].textContent} · ${state.voiceoverFile ? '영상 포함' : '브라우저 미리듣기만'}` : '꺼짐 · 나레이션 없음';
     $('.price-tag').textContent = state.style === 'Trailer' ? '영상당 5달러 · 구독료 없음' : `영상당 5달러 · 약 ${styles.find(s=>s.name===state.style)?.duration || 23}초`;
   }
   $$('.seg[data-format]').forEach(button => button.addEventListener('click', () => {
@@ -154,6 +154,32 @@
   function drawMusicChoices() {
     $('#musicGrid').innerHTML=''; tracks.forEach(track=>{const card=document.createElement('div');card.className=`music-option${state.music===track.name?' active':''}`;card.innerHTML=`<button type="button" aria-label="${track.title} 선택"><span>♫</span><b>${track.title}</b><small>${track.desc}</small></button>`;card.querySelector('button').addEventListener('click',()=>{state.music=track.name;drawMusicChoices();updateSelectionSummary();});$('#musicGrid').appendChild(card);});
   }
+  async function startMusicMix(durationMs,{monitor=false,includeVoice=false}={}) {
+    const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+    if(!AudioContextClass) throw new Error('이 브라우저는 오디오 합성을 지원하지 않습니다. 최신 Chrome 또는 Edge를 사용해 주세요.');
+    const context=new AudioContextClass(), destination=context.createMediaStreamDestination(), master=context.createGain();
+    await context.resume(); master.gain.value=1; master.connect(destination); if(monitor)master.connect(context.destination);
+    const presets={Taiko:{bpm:104,root:55,scale:[0,3,7,10],wave:'triangle',drum:.11},Bram:{bpm:82,root:49,scale:[0,3,7,10],wave:'sine',drum:.055},'Slow strings':{bpm:70,root:65.41,scale:[0,3,7,10],wave:'triangle',drum:.025},Choir:{bpm:78,root:65.41,scale:[0,3,7,10],wave:'sine',drum:.035},'Neon trailer':{bpm:116,root:55,scale:[0,3,7,10],wave:'sawtooth',drum:.065},'War drums':{bpm:100,root:49,scale:[0,2,7,9],wave:'triangle',drum:.14}};
+    const preset=presets[state.music]||presets.Taiko, beat=60/preset.bpm, total=Math.max(.5,Math.min(durationMs/1000,120)), now=context.currentTime+.08;
+    const tone=(frequency,at,length,volume,wave=preset.wave)=>{const osc=context.createOscillator(),gain=context.createGain();osc.type=wave;osc.frequency.setValueAtTime(frequency,at);gain.gain.setValueAtTime(.0001,at);gain.gain.linearRampToValueAtTime(volume,at+.025);gain.gain.exponentialRampToValueAtTime(.0001,at+Math.max(.04,length));osc.connect(gain);gain.connect(master);osc.start(at);osc.stop(at+length+.03);};
+    const roots=[1,1.1892,1.3348,.8909], bars=Math.ceil(total/(beat*4));
+    for(let bar=0;bar<bars;bar++){
+      const start=now+bar*beat*4, root=preset.root*roots[bar%roots.length];
+      for(const step of [0,2,4]) for(const interval of preset.scale.slice(0,3)) tone(root*Math.pow(2,interval/12),start+step*beat/2,beat*2,.018,preset.wave);
+      for(let b=0;b<4;b++){
+        const at=start+b*beat;if(at-now>total)break;
+        tone(root/2,at,.22,.035,'sine');
+        if(b===0||b===2)tone(48+(bar%3)*7,at,.2,preset.drum,'sine');
+        if((state.music==='Taiko'||state.music==='War drums')&&(b===1||b===3))tone(115+(bar%2)*23,at,.11,preset.drum*.65,'triangle');
+        if(state.music==='Neon trailer')tone(root*Math.pow(2,preset.scale[(bar+b)%preset.scale.length]/12)*2,at,.12,.025,'square');
+      }
+    }
+    if(includeVoice&&state.voice&&state.voiceoverFile){
+      const bytes=await state.voiceoverFile.arrayBuffer(),buffer=await context.decodeAudioData(bytes),source=context.createBufferSource(),gain=context.createGain();
+      source.buffer=buffer;gain.gain.value=.88;source.connect(gain);gain.connect(master);source.start(now);
+    }
+    return {stream:destination.stream,stop:()=>{if(context.state!=='closed')context.close();}};
+  }
   function drawSpeakers() {
     const language=$('#voiceLanguage').value;
     const available=('speechSynthesis' in window ? speechSynthesis.getVoices() : []).filter(voice=>voice.lang.toLowerCase().startsWith(language.slice(0,2).toLowerCase()));
@@ -163,6 +189,7 @@
     $('#speakerGrid').innerHTML=''; speakers.slice(0,8).forEach(speaker=>{const card=document.createElement('button');card.type='button';card.className=`speaker-option${state.speaker===speaker.name?' active':''}`;card.innerHTML=`<span>▶</span><b>${escapeAttr(speaker.name)}</b><small>${escapeAttr(speaker.desc)}</small>`;card.addEventListener('click',()=>{state.speaker=speaker.name;drawSpeakers();updateSelectionSummary();});$('#speakerGrid').appendChild(card);});
   }
   $('#voiceToggle').addEventListener('change',()=>{state.voice=$('#voiceToggle').checked;$('#voiceScript').classList.toggle('hidden',!state.voice);updateSelectionSummary();});
+  $('#voiceoverInput').addEventListener('change',event=>{const file=event.target.files?.[0];if(!file)return;if(!file.type.startsWith('audio/')){showNotice('음성 파일을 확인해 주세요','MP3, WAV, M4A 등 오디오 파일을 선택해 주세요.');return;}state.voiceoverFile=file;$('#voiceoverStatus').textContent=`${file.name} · 영상 내레이션으로 포함됩니다.`;updateSelectionSummary();});
   $('#voiceLanguage').addEventListener('change',()=>{const lang=$('#voiceLanguage').value; speakers.splice(0,speakers.length,...(lang==='ko-KR'?[{name:'한국어 기본 음성',desc:'기기에서 제공하는 자연스러운 음성',lang:'ko-KR'},{name:'한국어 여성 음성',desc:'한국어 여성 음성',lang:'ko-KR'},{name:'한국어 남성 음성',desc:'한국어 남성 음성',lang:'ko-KR'}]:[{name:'기본 음성',desc:'기기에서 제공하는 음성',lang},{name:'음성 2',desc:'기기에서 제공하는 음성',lang}]));state.speaker=speakers[0].name;drawSpeakers();updateSelectionSummary();});
   $('#speakScript').addEventListener('click',()=>{if(!('speechSynthesis'in window))return showNotice('음성 안내를 사용할 수 없습니다','브라우저가 음성 읽기를 지원하지 않습니다.');const utterance=new SpeechSynthesisUtterance($('#scriptText').value||$('#carName').value);utterance.lang=$('#voiceLanguage').value;utterance.voice=speechSynthesis.getVoices().find(voice=>voice.name===state.speaker)||null;utterance.rate=.92;window.speechSynthesis.cancel();window.speechSynthesis.speak(utterance);});
   $('#logoInput').addEventListener('change',e=>{const file=e.target.files[0];if(!file)return;state.logo=URL.createObjectURL(file);$('#logoName').textContent=file.name;updateSelectionSummary();});
@@ -192,11 +219,12 @@
   $('#makePreview').addEventListener('click',()=>{updateSelectionSummary();$('#exportRatio').textContent=state.ratio==='9:16'?'세로형 9:16 · 720 × 1280':'가로형 16:9 · 1280 × 720';$('#renderStage').classList.toggle('landscape',state.ratio==='16:9');$('#exportLength').textContent=`약 ${Math.round(state.scenes.reduce((s,x)=>s+x.duration,0))}초`;setStep(3);});
   $('#checkoutButton').addEventListener('click',()=>showNotice('결제 서비스가 연결되어 있지 않습니다','원본 VanillaSky는 Stripe로 5달러를 결제한 뒤 AI 모션 영상을 제작합니다. 이 독립 버전에서는 결제를 받지 않으며, 아래 무료 브라우저 미리보기와 WebM 다운로드를 사용할 수 있습니다.'));
   $('#changeSettings').addEventListener('click',()=>setStep(2));
-  let previewTimer=null, currentScene=0;
+  let previewTimer=null, previewRaf=0, previewMusic=null, activeRenderMix=null, currentScene=0;
   function drawFrame(sceneIndex=0, time=0) {
-    const canvas=$('#previewCanvas'); const ctx=canvas.getContext('2d'); const vertical=state.ratio==='9:16'; canvas.width=vertical?720:1280; canvas.height=vertical?1280:720;
+    const canvas=$('#previewCanvas'); const ctx=canvas.getContext('2d'); const vertical=state.ratio==='9:16'; const width=vertical?720:1280, height=vertical?1280:720;
+    if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
     const scene=state.scenes[sceneIndex%state.scenes.length]; if(!scene)return; const img=scene.photo.image; if(!img.complete||!img.naturalWidth)return;
-      const w=canvas.width,h=canvas.height, cover=Math.max(w/img.width,h/img.height), progress=(time%3000)/3000, zoom=1.04+progress*.09, sw=w/(cover*zoom),sh=h/(cover*zoom),sx=(img.width-sw)/2+Math.sin(progress*Math.PI)*img.width*.012,sy=(img.height-sh)/2;
+      const w=canvas.width,h=canvas.height, cover=Math.max(w/img.width,h/img.height), progress=Math.max(0,Math.min(1,time/Math.max(1,scene.duration*1000))), eased=progress*progress*(3-2*progress), zoom=1.035+eased*.075, sw=w/(cover*zoom),sh=h/(cover*zoom),direction=sceneIndex%2?1:-1,sx=(img.width-sw)/2+direction*Math.sin(eased*Math.PI/2)*img.width*.009,sy=(img.height-sh)/2;
       ctx.drawImage(img,sx,sy,sw,sh,0,0,w,h);
       if(state.background!=='당신의 사진'){const palette=bgColors[backgrounds.findIndex(item=>item[0]===state.background)]||bgColors[0];const tint=palette.split(',')[0];ctx.fillStyle=tint+'30';ctx.fillRect(0,0,w,h);}
       const grad=ctx.createLinearGradient(0,0,0,h);grad.addColorStop(0,'rgba(9,17,21,.06)');grad.addColorStop(.47,'rgba(9,17,21,.02)');grad.addColorStop(1,'rgba(9,17,21,.82)');ctx.fillStyle=grad;ctx.fillRect(0,0,w,h);
@@ -211,14 +239,16 @@
   function wrapText(ctx,text,x,y,maxWidth,lineHeight){const words=String(text).split(' ');let line='';const lines=[];for(const word of words){const test=line?`${line} ${word}`:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word;}else line=test;}if(line)lines.push(line);lines.slice(0,3).forEach((l,i)=>ctx.fillText(l,x,y+i*lineHeight));}
   function updatePreview(){ if(!state.scenes.length)return; drawFrame(currentScene,0); $('#timeline').innerHTML='';state.scenes.forEach((scene,i)=>{const seg=document.createElement('i');seg.className=`timeline-segment${i===currentScene?' active':''}`;seg.addEventListener('click',()=>{currentScene=i;drawFrame(i);$$('.timeline-segment').forEach((x,j)=>x.classList.toggle('active',i===j));});$('#timeline').appendChild(seg);}); }
   $('#prevScene').addEventListener('click',()=>{currentScene=(currentScene-1+state.scenes.length)%state.scenes.length;updatePreview();});$('#nextScene').addEventListener('click',()=>{currentScene=(currentScene+1)%state.scenes.length;updatePreview();});
-  $('#playPreview').addEventListener('click',()=>{if(previewTimer){clearInterval(previewTimer);previewTimer=null;$('#playPreview').textContent='▶';return;}$('#playPreview').textContent='Ⅱ';let started=performance.now();previewTimer=setInterval(()=>{const elapsed=performance.now()-started, total=state.scenes.reduce((s,x)=>s+x.duration*1000,0);if(elapsed>total){clearInterval(previewTimer);previewTimer=null;$('#playPreview').textContent='▶';return;}let mark=elapsed/1000;let i=0;while(i<state.scenes.length-1&&mark>=state.scenes[i].duration){mark-=state.scenes[i].duration;i++;}currentScene=i;drawFrame(i,mark*1000);$$('.timeline-segment').forEach((x,j)=>x.classList.toggle('active',i===j));},100);});
+  $('#playPreview').addEventListener('click',async()=>{if(previewRaf){cancelAnimationFrame(previewRaf);previewRaf=0;previewTimer=null;previewMusic?.stop();previewMusic=null;$('#playPreview').textContent='▶';return;}$('#playPreview').textContent='Ⅱ';try{const started=performance.now();previewMusic=await startMusicMix(Math.max(1000,state.scenes.reduce((s,x)=>s+x.duration*1000,0)),{includeVoice:true,monitor:true});const frame=now=>{const elapsed=now-started,total=state.scenes.reduce((s,x)=>s+x.duration*1000,0);if(elapsed>=total){previewRaf=0;previewTimer=null;previewMusic?.stop();previewMusic=null;$('#playPreview').textContent='▶';return;}let mark=elapsed/1000,i=0;while(i<state.scenes.length-1&&mark>=state.scenes[i].duration){mark-=state.scenes[i].duration;i++;}currentScene=i;drawFrame(i,mark*1000);$$('.timeline-segment').forEach((x,j)=>x.classList.toggle('active',i===j));previewRaf=requestAnimationFrame(frame);};previewRaf=requestAnimationFrame(frame);}catch(error){$('#playPreview').textContent='▶';showNotice('미리보기를 재생할 수 없습니다',error.message||'오디오 기능을 사용할 수 없습니다.');}});
   async function renderVideo() {
     if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream)return showNotice('동영상 저장을 지원하지 않습니다','이 브라우저에서는 캔버스 동영상 녹화를 지원하지 않습니다. 최신 Chrome 또는 Edge에서 다시 시도해 주세요.');
-    const canvas=$('#previewCanvas'); const stream=canvas.captureStream(30);
-    let mime='video/webm;codecs=vp9';if(!MediaRecorder.isTypeSupported(mime))mime='video/webm;codecs=vp8';if(!MediaRecorder.isTypeSupported(mime))mime='video/webm';
+    const canvas=$('#previewCanvas'), videoStream=canvas.captureStream(30), durationMs=state.scenes.reduce((sum,s)=>sum+s.duration,0)*1000;
+    const mix=await startMusicMix(durationMs,{includeVoice:true});activeRenderMix=mix;
+    const stream=new MediaStream([...videoStream.getVideoTracks(),...mix.stream.getAudioTracks()]);
+    let mime='video/webm;codecs=vp9,opus';if(!MediaRecorder.isTypeSupported(mime))mime='video/webm;codecs=vp8,opus';if(!MediaRecorder.isTypeSupported(mime))mime='video/webm';
     const recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:4500000}),chunks=[]; recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
     const progress=$('#renderProgress');progress.classList.remove('hidden');$('#downloadVideo').disabled=true;$('#downloadVideo').innerHTML='영상을 만드는 중…';
-    const duration=state.scenes.reduce((sum,s)=>sum+s.duration,0)*1000;const started=performance.now();let sceneIndex=0;
+    const duration=durationMs;const started=performance.now();let sceneIndex=0;
     const stopped=new Promise((resolve,reject)=>{recorder.addEventListener('stop',resolve,{once:true});recorder.addEventListener('error',event=>reject(event.error||new Error('WebM 녹화 중 오류가 발생했습니다.')),{once:true});});
     recorder.start(250);
     await new Promise(resolve=>{function frame(){const elapsed=performance.now()-started;let remain=elapsed/1000;sceneIndex=0;while(sceneIndex<state.scenes.length-1&&remain>=state.scenes[sceneIndex].duration){remain-=state.scenes[sceneIndex].duration;sceneIndex++;}currentScene=sceneIndex;drawFrame(sceneIndex,remain*1000);const pct=Math.min(100,Math.floor(elapsed/duration*100));$('#progressValue').textContent=`${pct}%`;$('#progressBar').style.width=`${pct}%`;$('#progressLabel').textContent=`${sceneIndex+1} / ${state.scenes.length} 장면 렌더링`;if(elapsed>=duration){resolve();return;}requestAnimationFrame(frame);}frame();});
@@ -229,9 +259,9 @@
     await Promise.race([stopped,new Promise(resolve=>setTimeout(resolve,4000))]);
     if(!chunks.length)throw new Error('녹화 데이터가 생성되지 않았습니다. 브라우저를 새로고침한 뒤 다시 시도해 주세요.');
     state.rendered=new Blob(chunks,{type:mime});const url=URL.createObjectURL(state.rendered);const anchor=document.createElement('a');anchor.href=url;const slug=$('#carName').value.trim().replace(/[^a-z0-9가-힣]+/gi,'-').replace(/^-|-$/g,'')||'vanillasky-video';anchor.download=`${slug}-${state.ratio==='9:16'?'shorts':'listing'}.webm`;anchor.click();setTimeout(()=>URL.revokeObjectURL(url),60000);
-    stream.getTracks().forEach(track=>track.stop());$('#progressLabel').textContent='영상 다운로드가 시작됐어요';$('#progressValue').textContent='완료';$('#progressBar').style.width='100%';$('#downloadVideo').disabled=false;$('#downloadVideo').innerHTML='영상 다시 만들기 <span>↓</span>';$('#downloadAgain').hidden=false;setStep(4);
+    stream.getTracks().forEach(track=>track.stop());mix.stop();activeRenderMix=null;$('#progressLabel').textContent='영상 다운로드가 시작됐어요';$('#progressValue').textContent='완료';$('#progressBar').style.width='100%';$('#downloadVideo').disabled=false;$('#downloadVideo').innerHTML='영상 다시 만들기 <span>↓</span>';$('#downloadAgain').hidden=false;setStep(4);
   }
-  const renderSafely=async()=>{try{await renderVideo();}catch(error){$('#downloadVideo').disabled=false;$('#downloadVideo').innerHTML='영상 파일 저장 <span>↓</span>';showNotice('영상 저장에 실패했습니다',error.message||'브라우저를 새로고침한 뒤 다시 시도해 주세요.');}};
+  const renderSafely=async()=>{try{await renderVideo();}catch(error){activeRenderMix?.stop();activeRenderMix=null;$('#downloadVideo').disabled=false;$('#downloadVideo').innerHTML='영상 파일 저장 <span>↓</span>';showNotice('영상 저장에 실패했습니다',error.message||'브라우저를 새로고침한 뒤 다시 시도해 주세요.');}};
   $('#downloadVideo').addEventListener('click',renderSafely);$('#downloadAgain').addEventListener('click',renderSafely);
   $('#linePerScene').addEventListener('change',()=>updatePreview());$('#fontSelect').addEventListener('change',()=>updatePreview());
   $('#menuButton').addEventListener('click',()=>showNotice('VanillaSky','차량을 등록하고 영상 설정을 완료하면 미리보기와 다운로드가 가능합니다.'));
